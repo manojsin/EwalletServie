@@ -1,6 +1,7 @@
 package com.novopay.ewalletservice.controller;
 import com.novopay.ewalletservice.entity.Transaction;
 import com.novopay.ewalletservice.model.CalculateChargeCommissionRequestWO;
+import com.novopay.ewalletservice.model.CalculateChargeCommissionResponse;
 import com.novopay.ewalletservice.model.TransactionRequestWO;
 import com.novopay.ewalletservice.service.TransactionService;
 import com.novopay.ewalletservice.service.UserAccountService;
@@ -38,8 +39,8 @@ public class TransactionController {
 
     @RequestMapping(value = "/calculate/chargeCommission",method = RequestMethod.POST)
     public ResponseEntity<?> calculateChargeCommission(@RequestBody CalculateChargeCommissionRequestWO calculateChargeCommissionRequestWO) {
-        List<Transaction> both = transactionService.calculateChargeCommission(calculateChargeCommissionRequestWO);
-        return new ResponseEntity<>("", HttpStatus.OK);
+        CalculateChargeCommissionResponse chargeCommission = transactionService.calculateChargeCommission(calculateChargeCommissionRequestWO);
+        return new ResponseEntity<>(chargeCommission, HttpStatus.OK);
     }
 
 }
