@@ -1,5 +1,7 @@
 package com.novopay.ewalletservice.service;
 import com.novopay.ewalletservice.entity.Transaction;
+import com.novopay.ewalletservice.model.CalculateChargeCommissionRequestWO;
+import com.novopay.ewalletservice.model.CalculateChargeCommissionResponse;
 import com.novopay.ewalletservice.model.TransactionRequestWO;
 import java.math.BigDecimal;
 import java.util.List;
@@ -13,4 +15,5 @@ public interface TransactionService {
     List<Transaction> transactions();
     Transaction createTransaction(Transaction txn);
     List<Transaction> transfer(TransactionRequestWO walletDTO, Long toUserAccountId, Long fromUserAccountId);
+    CalculateChargeCommissionResponse calculateChargeCommission(CalculateChargeCommissionRequestWO calculateChargeCommissionRequestWO);
 }
