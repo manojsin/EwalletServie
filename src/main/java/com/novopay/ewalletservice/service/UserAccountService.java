@@ -1,8 +1,10 @@
 package com.novopay.ewalletservice.service;
 import com.novopay.ewalletservice.entity.UserAccount;
+import com.novopay.ewalletservice.model.CreateUserAccountResponse;
+
 import java.util.List;
 public interface UserAccountService {
-    UserAccount save(UserAccount t);
+    CreateUserAccountResponse save(UserAccount userAccount);
     UserAccount update(UserAccount t, Long id);
     List<UserAccount> getList();
     UserAccount userAccountByPK(Long accountId);

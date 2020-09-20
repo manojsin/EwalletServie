@@ -1,6 +1,8 @@
 package com.novopay.ewalletservice.controller;
 import com.novopay.ewalletservice.entity.Transaction;
 import com.novopay.ewalletservice.entity.UserAccount;
+import com.novopay.ewalletservice.mapper.ModelToEntityConverter;
+import com.novopay.ewalletservice.model.CreateUserAccountResponse;
 import com.novopay.ewalletservice.model.UserAccountRequestWO;
 import com.novopay.ewalletservice.service.TransactionService;
 import com.novopay.ewalletservice.service.UserAccountService;
@@ -15,18 +17,22 @@ public class UserAccountController {
 
     private UserAccountService userAccountService;
     private TransactionService transactionService;
+    private ModelToEntityConverter modelToEntityConverter;
     @Autowired
     public  UserAccountController(UserAccountService userAccountService,
-                                 TransactionService transactionService)
+                                 TransactionService transactionService,
+                                  ModelToEntityConverter modelToEntityConverter)
     {
         this.userAccountService=userAccountService;
         this.transactionService=transactionService;
+        this.modelToEntityConverter=modelToEntityConverter;
     }
 
-    @RequestMapping(value = "",method = RequestMethod.POST)
+    @RequestMapping(value = "/account/create",method = RequestMethod.POST)
     public ResponseEntity<?> createUser(@RequestBody UserAccountRequestWO userAccountRequestWO) {
-        UserAccount saved = userAccountService.save(null);
-        return new ResponseEntity<>("", HttpStatus.CREATED);
+        UserAccount userAccount= modelToEntityConverter.convert(userAccountRequestWO);
+        CreateUserAccountResponse createUserAccountResponse = userAccountService.save(userAccount);
+        return new ResponseEntity<>(createUserAccountResponse, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/{id}",method = RequestMethod.PUT)

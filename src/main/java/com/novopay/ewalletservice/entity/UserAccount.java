@@ -1,9 +1,10 @@
 package com.novopay.ewalletservice.entity;
-
 import com.sun.istack.NotNull;
 import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,12 +15,14 @@ import java.util.Set;
 public class UserAccount {
     @Id
     @GeneratedValue
-    private Long id;
-    @NotNull
-    private String userName;
+    private Long accountNo;
+    private String firstName;
+    private String lastName;
     private String email;
-    @Temporal(javax.persistence.TemporalType.DATE)
-    private Date dateCreated;
-    @OneToMany(mappedBy = "userAccount", fetch = FetchType.EAGER)
+    private BigDecimal amount;
+    private String mobileNumber;
+    private Date Created_on=new Date();
+    @OneToMany(targetEntity= Transaction.class,cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JoinColumn(name = "accountNo")
     private Set<Transaction> transactions = new HashSet<>();
 }

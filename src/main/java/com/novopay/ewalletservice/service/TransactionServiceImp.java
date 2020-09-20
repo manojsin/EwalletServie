@@ -1,11 +1,11 @@
 package com.novopay.ewalletservice.service;
 import com.novopay.ewalletservice.entity.Transaction;
+import com.novopay.ewalletservice.entity.UserAccount;
 import com.novopay.ewalletservice.exception.BalanceLowException;
 import com.novopay.ewalletservice.exception.UserNotFoundException;
-import com.novopay.ewalletservice.model.CalculateChargeCommissionRequestWO;
-import com.novopay.ewalletservice.model.CalculateChargeCommissionResponse;
-import com.novopay.ewalletservice.model.TransactionRequestWO;
+import com.novopay.ewalletservice.model.*;
 import com.novopay.ewalletservice.repository.TransactionRepository;
+import com.novopay.ewalletservice.repository.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,17 +13,23 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 @Service
 public class TransactionServiceImp implements TransactionService {
 
     private TransactionRepository transactionRepository;
-    @Autowired
     private UserAccountService accountService;
+    private UserAccountRepository userAccountRepository;
     @Autowired
-    public TransactionServiceImp(TransactionRepository transactionRepository,UserAccountService accountService)
+    public TransactionServiceImp(TransactionRepository transactionRepository,
+                                 UserAccountService accountService,
+                                 UserAccountRepository userAccountRepository)
     {
         this.transactionRepository=transactionRepository;
         this.accountService=accountService;
+        this.userAccountRepository=userAccountRepository;
     }
 
     @Override
@@ -63,10 +69,27 @@ public class TransactionServiceImp implements TransactionService {
 
     @Override
     @Transactional
-    public Transaction createTransaction(Transaction transaction) {
-        BigDecimal balance = transactionRepository.getBalance(transaction.getUserAccount().getId());
-        if (balance.add(transaction.getAmount()).compareTo(BigDecimal.ZERO) >= 0) {
-            return transactionRepository.save(transaction);
+    public AddMoneyResponse createTransaction(TransactionRequestWO transaction) {
+        UserAccount userAccountDetails=userAccountRepository.findAllByAccountNo(transaction.getUserAccountId());
+        Optional<BigDecimal> balanceCheck=Optional.ofNullable(userAccountDetails.getAmount());
+        BigDecimal balance=balanceCheck.isPresent()? userAccountDetails.getAmount():new BigDecimal(0);
+        BigDecimal availableBalance=balance.add(transaction.getAmount());
+        if (availableBalance.compareTo(BigDecimal.ZERO) >= 0) {
+            Transaction transactionEntry=new Transaction();
+            transactionEntry.setDetails("Account credit");
+            long trxId=(long) (Math.random()*Math.pow(10,10));
+            transactionEntry.setAmount(transaction.getAmount());
+            transactionEntry.setTransactionReference(trxId);
+            userAccountDetails.getTransactions().add(transactionEntry);
+            userAccountDetails.setAmount(availableBalance);
+            userAccountRepository.save(userAccountDetails);
+            AddMoneyResponse addMoneyResponse=new AddMoneyResponse();
+            SuccessResponse successResponse=new SuccessResponse();
+            successResponse.setStatus(true);
+            successResponse.setSuccessMsg("Account has been credited successfully");
+            addMoneyResponse.setSuccess(successResponse);
+            addMoneyResponse.setTransactionId(Long.valueOf(trxId));
+            return addMoneyResponse;
         }
         throw new BalanceLowException(String.format("user's balance is %.2f and cannot perform a transaction of %.2f ",balance.doubleValue(), transaction.getAmount().doubleValue()),403);
         }
