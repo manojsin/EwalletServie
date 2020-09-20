@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     @Query(nativeQuery = true, value = "select * from transaction where transaction_reference = ?")
-    Optional<Transaction> getTransactionByRef(Long txnRef);
+    List<Transaction> getTransactionByRef(Long txnRef);
     @Query(nativeQuery = true, value = "select * from transaction where account_no = ?")
     List<Transaction> getTransactionsForUser(Long accountId);
 }

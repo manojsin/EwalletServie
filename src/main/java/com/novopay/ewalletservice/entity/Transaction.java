@@ -12,6 +12,8 @@ public class Transaction {
     private Long id;
     private String details;
     private BigDecimal amount;
+    private Long accountNo;
     private Date transactionDate=new Date();
     private Long transactionReference;
+    private Long transactionAccountNo;
 }

@@ -6,7 +6,8 @@ public interface TransactionService {
     AddMoneyResponse createTransaction(TransactionRequestWO requestWO);
     TransferMoneyResponse transfer(TransferMoneyRequestWO walletDTO);
     CalculateChargeCommissionResponse calculateChargeCommission(CalculateChargeCommissionRequestWO calculateChargeCommissionRequestWO);
-   //todo add atoher feature
+    TransferMoneyResponse reverseTransaction(Long transactionId);
+    //todo add atoher feature
     /*Transaction transactionByRef(Long txnRef);
     BigDecimal balanceByUserAccountID(Long accountId) ;
     List<Transaction> transactions();

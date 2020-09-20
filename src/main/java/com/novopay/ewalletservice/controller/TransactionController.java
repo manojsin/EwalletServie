@@ -41,4 +41,11 @@ public class TransactionController {
         return new ResponseEntity<>(chargeCommission, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Reverse Transaction ", response = TransferMoneyResponse.class, tags = "transact")
+    @RequestMapping(value = "/reverse/{transactionId}/transaction",method = RequestMethod.GET)
+    public ResponseEntity<?> reverseTransaction(@PathVariable("transactionId") Long transactionId) {
+        TransferMoneyResponse reverseTransaction = transactionService.reverseTransaction(transactionId);
+        return new ResponseEntity<>(reverseTransaction, HttpStatus.OK);
+    }
+
 }
