@@ -9,14 +9,14 @@ public class TransferMoneyResponse {
     private Long toAccountNo;
     private Long formAccountNo;
     private BigDecimal transferAmount;
-    private BigDecimal availableAmount;
-    private SuccessResponse successResponse;
+    private BigDecimal availableBal;
+    private SuccessResponse success;
     public TransferMoneyResponse(TransferMoneyRequestWO walletDTO,BigDecimal aval) {
         this.toAccountNo=walletDTO.getToAccountNo();
         this.formAccountNo=walletDTO.getFormAccountNo();
         this.transferAmount=walletDTO.getAmount();
-        this.availableAmount=aval;
-        this.successResponse=getSuccessRespon();
+        this.availableBal =aval;
+        this.success =getSuccessRespon();
     }
     private SuccessResponse getSuccessRespon() {
         SuccessResponse successResponse=new SuccessResponse();

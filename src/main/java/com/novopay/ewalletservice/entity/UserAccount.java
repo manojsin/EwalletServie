@@ -19,7 +19,7 @@ public class UserAccount {
     private String firstName;
     private String lastName;
     private String email;
-    private BigDecimal amount;
+    private BigDecimal availableBal;
     private String mobileNumber;
     private Date Created_on=new Date();
     @OneToMany(targetEntity= Transaction.class,cascade = CascadeType.ALL,fetch = FetchType.LAZY)

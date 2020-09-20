@@ -55,7 +55,7 @@ public class UserAccountController {
 
     @RequestMapping(value = "/{id}/passbook",method = RequestMethod.GET)
     public ResponseEntity<?> getUserPassbook(@PathVariable("id") Long id) {
-        List<Transaction> passbook=transactionService.transactionsByUserAccountID(id);
-        return new ResponseEntity<>("", HttpStatus.OK);
+        UserAccount passbook=transactionService.transactionsByUserAccountID(id);
+        return new ResponseEntity<>(passbook, HttpStatus.OK);
     }
 }
