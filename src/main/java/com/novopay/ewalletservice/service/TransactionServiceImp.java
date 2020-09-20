@@ -4,66 +4,26 @@ import com.novopay.ewalletservice.entity.UserAccount;
 import com.novopay.ewalletservice.exception.BalanceLowException;
 import com.novopay.ewalletservice.exception.UserNotFoundException;
 import com.novopay.ewalletservice.model.*;
-import com.novopay.ewalletservice.repository.TransactionRepository;
 import com.novopay.ewalletservice.repository.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
-
 @Service
 public class TransactionServiceImp implements TransactionService {
 
-    private TransactionRepository transactionRepository;
-    private UserAccountService accountService;
     private UserAccountRepository userAccountRepository;
     @Autowired
-    public TransactionServiceImp(TransactionRepository transactionRepository,
-                                 UserAccountService accountService,
-                                 UserAccountRepository userAccountRepository)
+    public TransactionServiceImp(UserAccountRepository userAccountRepository)
     {
-        this.transactionRepository=transactionRepository;
-        this.accountService=accountService;
         this.userAccountRepository=userAccountRepository;
-    }
-
-    @Override
-    public Transaction save(Transaction t) {
-        return null;
-    }
-
-    @Override
-    public Transaction update(Transaction t, Long id) {
-        return null;
-    }
-
-    @Override
-    public List<Transaction> getList() {
-        return transactionRepository.findAll();
     }
 
     @Override
     public UserAccount transactionsByUserAccountID(Long accountId) {
         return userAccountRepository.findAllByAccountNo(accountId);
     }
-
-    @Override
-    public Transaction transactionByRef(Long txnRef)  {
-       return transactionRepository.getTransactionByRef(txnRef).orElseThrow(() -> new UserNotFoundException(String.format("transaction with ref '%d' doesnt exist", txnRef),404));
-    }
-    /*@Override
-    public BigDecimal balanceByUserAccountID(Long accountId) {
-        return transactionRepository.getBalance(accountId);
-    }*/
-
-    @Override
-    public List<Transaction> transactions() {
-        return transactionRepository.findAll();
-    }
-
     @Override
     @Transactional
     public AddMoneyResponse createTransaction(TransactionRequestWO transaction) {

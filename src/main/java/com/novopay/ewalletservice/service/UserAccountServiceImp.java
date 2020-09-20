@@ -30,8 +30,8 @@ public class UserAccountServiceImp implements UserAccountService {
         createUserAccountResponse.setAccountId(userAccount1.getAccountNo());
         return createUserAccountResponse;
     }
-
-    @Override
+    //todo add another feature
+    /*@Override
     public UserAccount update(UserAccount userAccount, Long id) {
         userAccount.setAccountNo(id);
         UserAccount update= userAccountRepository.save(userAccount);
@@ -47,5 +47,5 @@ public class UserAccountServiceImp implements UserAccountService {
     public UserAccount userAccountByPK(Long accountId) {
         //return userAccountRepository.findById(accountId).orElseThrow(() -> new UserNotFoundException(String.format("userAccount with '%d' not found ", accountId)));
         return null;
-    }
+    }*/
 }
