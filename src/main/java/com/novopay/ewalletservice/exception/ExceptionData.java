@@ -14,7 +14,7 @@ public class ExceptionData {
     private int errorCode;
 
     public ExceptionData(String errorMessage , int erroCode){
-        //this.status = CommonConstant.FAILURE;
+        this.status = "Failure";
         this.errorMessage = errorMessage;
         this.errorCode = erroCode;
     }

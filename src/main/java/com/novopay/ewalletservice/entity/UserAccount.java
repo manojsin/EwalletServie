@@ -1,14 +1,10 @@
 package com.novopay.ewalletservice.entity;
-import com.sun.istack.NotNull;
 import lombok.Data;
-import org.hibernate.annotations.ColumnDefault;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 @Data
 @Entity
 @Table

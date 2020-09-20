@@ -1,6 +1,6 @@
 package com.novopay.ewalletservice.controller;
-import com.novopay.ewalletservice.entity.Transaction;
 import com.novopay.ewalletservice.entity.UserAccount;
+import com.novopay.ewalletservice.exception.CommonUtil;
 import com.novopay.ewalletservice.mapper.ModelToEntityConverter;
 import com.novopay.ewalletservice.model.CalculateChargeCommissionResponse;
 import com.novopay.ewalletservice.model.CreateUserAccountResponse;
@@ -12,8 +12,12 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("v1/users")
 @Api(value = "E Wallet UserAccountController")
@@ -33,7 +37,8 @@ public class UserAccountController {
     }
     @ApiOperation(value = "Create User Account ", response = CalculateChargeCommissionResponse.class, tags = "transact")
     @RequestMapping(value = "/account/create",method = RequestMethod.POST)
-    public ResponseEntity<?> createUser(@RequestBody UserAccountRequestWO userAccountRequestWO) {
+    public ResponseEntity<?> createUser(@Validated @RequestBody UserAccountRequestWO userAccountRequestWO, BindingResult error) {
+        CommonUtil.validateRequest(error);
         UserAccount userAccount= modelToEntityConverter.convert(userAccountRequestWO);
         CreateUserAccountResponse createUserAccountResponse = userAccountService.save(userAccount);
         return new ResponseEntity<>(createUserAccountResponse, HttpStatus.CREATED);
