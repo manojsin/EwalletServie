@@ -75,12 +75,8 @@ public class TransactionServiceImp implements TransactionService {
         BigDecimal balance=balanceCheck.isPresent()? userAccountDetails.getAmount():new BigDecimal(0);
         BigDecimal availableBalance=balance.add(transaction.getAmount());
         if (availableBalance.compareTo(BigDecimal.ZERO) >= 0) {
-            Transaction transactionEntry=new Transaction();
-            transactionEntry.setDetails("Account credit");
             long trxId=(long) (Math.random()*Math.pow(10,10));
-            transactionEntry.setAmount(transaction.getAmount());
-            transactionEntry.setTransactionReference(trxId);
-            userAccountDetails.getTransactions().add(transactionEntry);
+            userAccountDetails.getTransactions().add(getTransactionDetails(transaction.getAmount(),"Account credit",trxId));
             userAccountDetails.setAmount(availableBalance);
             userAccountRepository.save(userAccountDetails);
             AddMoneyResponse addMoneyResponse=new AddMoneyResponse();
@@ -96,32 +92,44 @@ public class TransactionServiceImp implements TransactionService {
 
     @Override
     @Transactional
-    public List<Transaction> transfer(TransactionRequestWO walletDTO, Long toUserAccountId, Long fromUserAccountId) {
-        List<Transaction> transactions = new ArrayList<>();
-
-        if (accountService.userAccountByPK(fromUserAccountId) == null)
-           throw new UserNotFoundException(String.format("userAccount with '%d' not found ", fromUserAccountId),404);
-        if (accountService.userAccountByPK(toUserAccountId) == null) {
-            throw new UserNotFoundException(String.format("userAccount with '%d' not found ", toUserAccountId),404);
+    public TransferMoneyResponse transfer(TransferMoneyRequestWO walletDTO) {
+        UserAccount senderAccount=userAccountRepository.findAllByAccountNo(walletDTO.getFormAccountNo());
+        UserAccount receiverAccount=userAccountRepository.findAllByAccountNo(walletDTO.getToAccountNo());
+        if (receiverAccount==null)
+           throw new UserNotFoundException(String.format("userAccount with '%d' not found ", walletDTO.getToAccountNo()),404);
+        if (senderAccount==null) {
+            throw new UserNotFoundException(String.format("userAccount with '%d' not found ", walletDTO.getFormAccountNo()),404);
         }
-        Transaction sourceUserTransaction;
-        Transaction destinationUserTransaction;
-
-        walletDTO.setUserAccountId(fromUserAccountId);
-        walletDTO.setAmount(walletDTO.getAmount().negate());
-        sourceUserTransaction = null;//createTransaction(TransactionMapper.dtoToDO(walletDTO));
-        transactions.add(sourceUserTransaction);
-
-        walletDTO.setUserAccountId(toUserAccountId);
-        walletDTO.setAmount(walletDTO.getAmount().negate());
-        destinationUserTransaction =null;// createTransaction(TransactionMapper.dtoToDO(walletDTO));
-        transactions.add(destinationUserTransaction);
-
-        return transactions;
+        Optional<BigDecimal> balanceCheck=Optional.ofNullable(senderAccount.getAmount());
+        BigDecimal senderAvlBalance=balanceCheck.isPresent()? senderAccount.getAmount():new BigDecimal(0);
+        if(senderAvlBalance.compareTo(walletDTO.getAmount())<=0) {
+            throw new BalanceLowException(String.format("user's balance is %.2f and cannot perform a transaction of %.2f ",senderAvlBalance, walletDTO.getAmount().doubleValue()),403);
+        }
+        long trxId=(long) (Math.random()*Math.pow(10,10));
+        //sender balance
+         senderAvlBalance=senderAvlBalance.subtract(walletDTO.getAmount());
+         senderAccount.setAmount(senderAvlBalance);
+         senderAccount.getTransactions().add(getTransactionDetails(walletDTO.getAmount(),"Amount debit",trxId));
+         //receiver balance
+        Optional<BigDecimal> receiverBal=Optional.ofNullable(receiverAccount.getAmount());
+        BigDecimal receiverTotal=receiverBal.isPresent()? receiverAccount.getAmount():new BigDecimal(0);
+        receiverTotal=receiverTotal.add(walletDTO.getAmount());
+        receiverAccount.setAmount(receiverTotal);
+        receiverAccount.getTransactions().add(getTransactionDetails(walletDTO.getAmount(),"Amount credit",trxId));
+        userAccountRepository.save(senderAccount);
+        userAccountRepository.save(receiverAccount);
+        return new TransferMoneyResponse(walletDTO,senderAvlBalance);
     }
 
     @Override
     public CalculateChargeCommissionResponse calculateChargeCommission(CalculateChargeCommissionRequestWO calculateChargeCommissionRequestWO) {
         return null;
+    }
+    private Transaction getTransactionDetails(BigDecimal amount,String message,Long trxId) {
+        Transaction transactionEntry=new Transaction();
+        transactionEntry.setDetails(message);
+        transactionEntry.setAmount(amount);
+        transactionEntry.setTransactionReference(trxId);
+        return transactionEntry;
     }
 }

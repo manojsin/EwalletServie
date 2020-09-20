@@ -1,9 +1,6 @@
 package com.novopay.ewalletservice.controller;
 import com.novopay.ewalletservice.entity.Transaction;
-import com.novopay.ewalletservice.model.AddMoneyResponse;
-import com.novopay.ewalletservice.model.CalculateChargeCommissionRequestWO;
-import com.novopay.ewalletservice.model.CalculateChargeCommissionResponse;
-import com.novopay.ewalletservice.model.TransactionRequestWO;
+import com.novopay.ewalletservice.model.*;
 import com.novopay.ewalletservice.service.TransactionService;
 import com.novopay.ewalletservice.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +28,10 @@ public class TransactionController {
         AddMoneyResponse addMoneyResponse = transactionService.createTransaction(requestWO);
         return new ResponseEntity<>(addMoneyResponse, HttpStatus.CREATED);
     }
-    @RequestMapping(value = "/{toUser}/from/{fromUser}",method = RequestMethod.POST)
-    public ResponseEntity<?> transferMoney(@PathVariable("toUser") Long toUserAccountId, @PathVariable("fromUser") Long fromUserAccountId, @RequestBody TransactionRequestWO requestWO) {
-        List<Transaction> both = transactionService.transfer(requestWO, toUserAccountId, fromUserAccountId);
-        return new ResponseEntity<>("", HttpStatus.OK);
+    @RequestMapping(value = "/transfer",method = RequestMethod.POST)
+    public ResponseEntity<?> transferMoney(@RequestBody TransferMoneyRequestWO requestWO) {
+        TransferMoneyResponse transferMoneyResponse= transactionService.transfer(requestWO);
+        return new ResponseEntity<>(transferMoneyResponse, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/calculate/chargeCommission",method = RequestMethod.POST)

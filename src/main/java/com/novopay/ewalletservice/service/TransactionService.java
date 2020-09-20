@@ -1,9 +1,7 @@
 package com.novopay.ewalletservice.service;
 import com.novopay.ewalletservice.entity.Transaction;
-import com.novopay.ewalletservice.model.AddMoneyResponse;
-import com.novopay.ewalletservice.model.CalculateChargeCommissionRequestWO;
-import com.novopay.ewalletservice.model.CalculateChargeCommissionResponse;
-import com.novopay.ewalletservice.model.TransactionRequestWO;
+import com.novopay.ewalletservice.model.*;
+
 import java.math.BigDecimal;
 import java.util.List;
 public interface TransactionService {
@@ -15,6 +13,6 @@ public interface TransactionService {
     BigDecimal balanceByUserAccountID(Long accountId) ;
     List<Transaction> transactions();
     AddMoneyResponse createTransaction(TransactionRequestWO requestWO);
-    List<Transaction> transfer(TransactionRequestWO walletDTO, Long toUserAccountId, Long fromUserAccountId);
+    TransferMoneyResponse transfer(TransferMoneyRequestWO walletDTO);
     CalculateChargeCommissionResponse calculateChargeCommission(CalculateChargeCommissionRequestWO calculateChargeCommissionRequestWO);
 }
